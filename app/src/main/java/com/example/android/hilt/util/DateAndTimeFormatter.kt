@@ -17,18 +17,21 @@
 package com.example.android.hilt.util
 
 import android.annotation.SuppressLint
+import dagger.hilt.android.scopes.FragmentScoped
 import java.text.SimpleDateFormat
 import java.util.Date
+import javax.inject.Inject
 
 /**
  * String formatter for the log dates.
  */
-class DateFormatter {
+@FragmentScoped
+class DateAndTimeFormatter @Inject constructor() : GeneralFormatter {
 
     @SuppressLint("SimpleDateFormat")
     private val formatter = SimpleDateFormat("d MMM yyyy HH:mm:ss")
 
-    fun formatDate(timestamp: Long): String {
+    override fun formatDate(timestamp: Long): String {
         return formatter.format(Date(timestamp))
     }
 }

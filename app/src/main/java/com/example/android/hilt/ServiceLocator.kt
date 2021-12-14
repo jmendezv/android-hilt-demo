@@ -23,8 +23,12 @@ import com.example.android.hilt.data.AppDatabase
 import com.example.android.hilt.data.LoggerLocalDataSource
 import com.example.android.hilt.navigator.AppNavigator
 import com.example.android.hilt.navigator.AppNavigatorImpl
-import com.example.android.hilt.util.DateFormatter
+import com.example.android.hilt.util.DateAndTimeFormatter
 
+/*
+* Deprecated.
+*
+* */
 class ServiceLocator(applicationContext: Context) {
 
     private val logsDatabase = Room.databaseBuilder(
@@ -33,9 +37,11 @@ class ServiceLocator(applicationContext: Context) {
         "logging.db"
     ).build()
 
+    // A scoped on (same instance) in every call
     val loggerLocalDataSource = LoggerLocalDataSource(logsDatabase.logDao())
 
-    fun provideDateFormatter() = DateFormatter()
+    // A new one in every call
+    fun provideDateFormatter() = DateAndTimeFormatter()
 
     fun provideNavigator(activity: FragmentActivity): AppNavigator {
         return AppNavigatorImpl(activity)

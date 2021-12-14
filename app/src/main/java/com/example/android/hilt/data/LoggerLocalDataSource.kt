@@ -18,20 +18,50 @@ package com.example.android.hilt.data
 
 import android.os.Handler
 import android.os.Looper
+import android.os.Message
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Data manager class that handles data manipulation between the database and the UI.
+ * Handler(Looper) is able to implement a concurrency pattern.
+ * A Handler is associated with the primary thread and then attaching a runnable command to it.
+ *
+ * The Android Looper class contains a MessageQueue and it is associated only with the thread
+ * from which it was created (The main thread).
+ *
+ * The Android Handler class takes charge of adding, removing and updating messages within a
+ * particular MessageQueue. Handlers are attached to Loopers and their associated threads,
+ * but multiple Handlers can be attached to a single thread
+ *
+ * Looper is a class which is used to execute the Messages(Runnables) in a queue.
  */
-class LoggerLocalDataSource(private val logDao: LogDao) {
+
+//internal class LooperThread : Thread() {
+//    var mHandler: Handler? = null
+//    override fun run() {
+//        Looper.prepare()
+//        mHandler = object : Handler(Looper.getMainLooper()) {
+//
+//        }
+//        Looper.loop()
+//    }
+//}
+/*
+* the application container always provide the same instance regardless of whether the type is
+* used as a dependency of another type or if it needs to be field injected.
+* */
+@Singleton
+class LoggerLocalDataSource @Inject constructor(private val logDao: LogDao): LoggerDataSource {
 
     private val executorService: ExecutorService = Executors.newFixedThreadPool(4)
     private val mainThreadHandler by lazy {
         Handler(Looper.getMainLooper())
     }
 
-    fun addLog(msg: String) {
+    override fun addLog(msg: String) {
         executorService.execute {
             logDao.insertAll(
                 Log(
@@ -42,14 +72,14 @@ class LoggerLocalDataSource(private val logDao: LogDao) {
         }
     }
 
-    fun getAllLogs(callback: (List<Log>) -> Unit) {
+    override fun getAllLogs(callback: (List<Log>) -> Unit) {
         executorService.execute {
             val logs = logDao.getAll()
             mainThreadHandler.post { callback(logs) }
         }
     }
 
-    fun removeLogs() {
+    override fun removeLogs() {
         executorService.execute {
             logDao.nukeTable()
         }

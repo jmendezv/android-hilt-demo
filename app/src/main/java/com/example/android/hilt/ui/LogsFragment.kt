@@ -17,7 +17,6 @@
 package com.example.android.hilt.ui
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -25,19 +24,35 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
-import com.example.android.hilt.LogApplication
 import com.example.android.hilt.R
 import com.example.android.hilt.data.Log
-import com.example.android.hilt.data.LoggerLocalDataSource
-import com.example.android.hilt.util.DateFormatter
+import com.example.android.hilt.data.LoggerDataSource
+import com.example.android.hilt.di.QualifierDatabaseLogger
+import com.example.android.hilt.di.QualifierDateOnlyFormatter
+import com.example.android.hilt.util.DateAndTimeFormatter
+import com.example.android.hilt.util.DateOnlyFormatter
+import com.example.android.hilt.util.GeneralFormatter
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 /**
+ * msabate00
  * Fragment that displays the database logs.
+ * To make LogsFragment use Hilt, we have to annotate it with @AndroidEntryPoint
+ * @AndroidEntryPoint creates a dependencies container that follows the Android class lifecycle.
  */
+@AndroidEntryPoint
 class LogsFragment : Fragment() {
 
-    private lateinit var logger: LoggerLocalDataSource
-    private lateinit var dateFormatter: DateFormatter
+//    @QualifierInMemoryLogger
+    @QualifierDatabaseLogger
+    @Inject
+    lateinit var logger: LoggerDataSource
+    @Inject
+    lateinit var dateAndTimeFormatter: DateAndTimeFormatter
+    @QualifierDateOnlyFormatter
+    @Inject
+    lateinit var formatter: GeneralFormatter
 
     private lateinit var recyclerView: RecyclerView
 
@@ -55,17 +70,17 @@ class LogsFragment : Fragment() {
         }
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
+//    override fun onAttach(context: Context) {
+//        super.onAttach(context)
+//
+//        populateFields(context)
+//    }
 
-        populateFields(context)
-    }
-
-    private fun populateFields(context: Context) {
-        logger = (context.applicationContext as LogApplication).serviceLocator.loggerLocalDataSource
-        dateFormatter =
-            (context.applicationContext as LogApplication).serviceLocator.provideDateFormatter()
-    }
+//    private fun populateFields(context: Context) {
+//        logger = (context.applicationContext as LogApplication).serviceLocator.loggerLocalDataSource
+//        dateFormatter =
+//            (context.applicationContext as LogApplication).serviceLocator.provideDateFormatter()
+//    }
 
     override fun onResume() {
         super.onResume()
@@ -74,7 +89,7 @@ class LogsFragment : Fragment() {
             recyclerView.adapter =
                 LogsViewAdapter(
                     logs,
-                    dateFormatter
+                    dateAndTimeFormatter
                 )
         }
     }
@@ -85,7 +100,7 @@ class LogsFragment : Fragment() {
  */
 private class LogsViewAdapter(
     private val logsDataSet: List<Log>,
-    private val daterFormatter: DateFormatter
+    private val daterAndTimeFormatter: DateAndTimeFormatter
 ) : RecyclerView.Adapter<LogsViewAdapter.LogsViewHolder>() {
 
     class LogsViewHolder(val textView: TextView) : RecyclerView.ViewHolder(textView)
@@ -104,6 +119,6 @@ private class LogsViewAdapter(
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: LogsViewHolder, position: Int) {
         val log = logsDataSet[position]
-        holder.textView.text = "${log.msg}\n\t${daterFormatter.formatDate(log.timestamp)}"
+        holder.textView.text = "${log.msg}\n\t${daterAndTimeFormatter.formatDate(log.timestamp)}"
     }
 }
