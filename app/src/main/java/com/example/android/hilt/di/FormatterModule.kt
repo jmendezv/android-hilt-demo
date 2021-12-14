@@ -8,19 +8,20 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.FragmentComponent
+import dagger.hilt.android.scopes.ActivityScoped
 import dagger.hilt.android.scopes.FragmentScoped
 import javax.inject.Qualifier
 
 @Qualifier
-@Retention(AnnotationRetention.BINARY)
-@Target(AnnotationTarget.FUNCTION)
-@MustBeDocumented
+//@Retention(AnnotationRetention.BINARY)
+//@Target(AnnotationTarget.FUNCTION)
+//@MustBeDocumented
 annotation class QualifierDateOnlyFormatter
 
 @Qualifier
-@Retention(AnnotationRetention.BINARY)
-@Target(AnnotationTarget.FUNCTION)
-@MustBeDocumented
+//@Retention(AnnotationRetention.BINARY)
+//@Target(AnnotationTarget.FUNCTION)
+//@MustBeDocumented
 annotation class QualifierDateAndTimeFormatter
 
 @Module
@@ -30,7 +31,7 @@ abstract class FormatterModule {
     @QualifierDateOnlyFormatter
     @FragmentScoped
     @Binds
-    abstract fun bindDateOnlyFormatter(impl: DateOnlyFormatter):
+    abstract fun bindDateOnlyFormatter(formatterImpl: DateOnlyFormatter):
             GeneralFormatter
 
     @QualifierDateAndTimeFormatter

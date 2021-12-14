@@ -16,9 +16,10 @@
 
 package com.example.android.hilt.ui
 
+import android.content.res.AssetManager
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import com.example.android.hilt.LogApplication
 import com.example.android.hilt.R
 import com.example.android.hilt.navigator.AppNavigator
 import com.example.android.hilt.navigator.Screens
@@ -26,18 +27,25 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 /**
+ * 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
  * Main activity of the application.
  *
  * Container for the Buttons & Logs fragments. This activity simply tracks clicks on buttons.
  */
+const val TAG = "Application"
+
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    @Inject lateinit var navigator: AppNavigator
+    @Inject
+    lateinit var navigator: AppNavigator
+    @Inject
+    lateinit var assetManager: AssetManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        Log.d(TAG, assetManager.toString())
 
 //        navigator = (applicationContext as LogApplication).serviceLocator.provideNavigator(this)
 

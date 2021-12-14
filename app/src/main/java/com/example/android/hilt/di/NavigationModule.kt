@@ -12,6 +12,10 @@ import dagger.hilt.android.qualifiers.ActivityContext
 @InstallIn(ActivityComponent::class)
 abstract class NavigationModule {
 
+    /*
+    * @Binds methods must have exactly one parameter, whose type is assignable to the return type
+    *
+    * */
     @Binds
     abstract fun bindNavigator(impl: AppNavigatorImpl): AppNavigator
 
